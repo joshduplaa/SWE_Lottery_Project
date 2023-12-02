@@ -1,0 +1,29 @@
+/* index.css */
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+  background-color: #333;
+  color: white;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 0 1em;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.profile {
+  padding-left: 1em;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 1em;
+  margin: 1em;
+}
