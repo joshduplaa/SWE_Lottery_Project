@@ -1,0 +1,34 @@
+.tickets-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .ticket-card {
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .ticket-card h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .ticket-card p {
+    margin-bottom: 1rem;
+  }
+  
+  .ticket-card button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+  
+  .ticket-card button:hover {
+    background-color: #0056b3;
+  }

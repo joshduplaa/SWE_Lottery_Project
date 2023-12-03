@@ -1,0 +1,18 @@
+/* PurchaseConfirmation.css */
+.purchase-confirmation-container {
+    padding: 2rem;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .confirmation-details {
+    margin-top: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  
+  .confirmation-details p {
+    margin-bottom: 0.5rem;
+  }

@@ -1,0 +1,20 @@
+/* Profile.css and AdminProfile.css */
+.profile-container,
+.admin-profile-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.profile-container h1,
+.admin-profile-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-details p,
+.admin-profile-details p {
+  margin-bottom: 0.5rem;
+}
