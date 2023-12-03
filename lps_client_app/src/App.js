@@ -8,6 +8,7 @@ import Tickets from './pages/browsetickets';
 import AboutUs from './pages/aboutus';
 import WinningTickets from './pages/winningTickets';
 import Profile from './pages/profile';
+import Purchase from './pages/purchase';
 import LoginPage from './pages/login'; // assuming you have a LoginPage component
 
 function App() {
@@ -34,6 +35,9 @@ function App() {
           <Route path="/winnings" element={<WinningTickets />} />
           <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={!isAuthenticated ? <LoginPage onLogin={handleLogin} /> : <Navigate to="/profile" />} />
+          <Route path="/winnings" element={<WinningTickets />} />
+          <Route path="/purchase" element={<Purchase />} />
+          
         </Routes>
       </main>
     </Router>

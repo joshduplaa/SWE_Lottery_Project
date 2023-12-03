@@ -13,6 +13,12 @@ nav {
   padding: 0 1em;
 }
 
+.title a {
+  color: white;
+  text-decoration: none;
+  padding: 0 1em;
+}
+
 .nav-links a:hover {
   text-decoration: underline;
 }

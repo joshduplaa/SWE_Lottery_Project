@@ -1,56 +1,35 @@
-
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../page_styles/purchase.css';
 
-const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    // Perform login logic here
-    console.log("Logging in with:", username, password);
-    // After login, navigate to a different page, e.g., user profile
-    // navigate('/profile');
-  };
 
-  const handleSignUpRedirect = () => {
-    // Redirect user to the sign-up page
-    navigate('/signup');
+const Purchase = () => {
+  // Example purchase data, replace with actual data after the purchase
+  const purchaseDetails = {
+    ticketName: "Powerball",
+    ticketPrice: "$10",
+    purchaseDate: new Date().toLocaleDateString(),
+    ticketNumber: "A1B2C3",
+    jackpot: "$100M"
   };
 
   return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Log In</button>
-      </form>
-      <p className="signup-redirect">
-        Don't have an account? <button onClick={handleSignUpRedirect}>Sign Up</button>
-      </p>
+    <div className="purchase-details">
+      <h1>Purchase Confirmation</h1>
+      <div className="confirmation-details">
+        <p>Current Purchase</p>
+        <p><strong>Ticket:</strong> {purchaseDetails.ticketName}</p>
+        <p><strong>Price:</strong> {purchaseDetails.ticketPrice}</p>
+        <p><strong>Quantity to Purchase:</strong>
+        toggle with range of numbers 1-10
+        </p>
+        <p><strong>Numbers:</strong> {purchaseDetails.jackpot}</p>
+        <p><strong>Numbers:</strong> {purchaseDetails.jackpot}</p>
+        <p><strong>Jackpot:</strong> {purchaseDetails.jackpot}</p>
+      </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Purchase;
