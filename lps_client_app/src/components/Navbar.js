@@ -12,7 +12,6 @@ function Navbar() {
         <a href="/winnings">Winnings</a>
         <a href="/profile">Profile</a>
         <a href="/signup">SignUp</a>
-
       </div>
     </nav>
   );

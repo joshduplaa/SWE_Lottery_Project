@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from 'react';
 import { firestore, auth } from '../firebaseConfig';
 import { collection, addDoc, getDoc, doc, query, where, getDocs, updateDoc, setDoc } from 'firebase/firestore';
@@ -81,7 +83,36 @@ const PurchaseCard = ({ ticket, onClose }) => {
         transactionId: transactionId
       });
   
+
+      //Add logic to increase the NumOfTickets and revenue in the Transaction collection under the status document accordingly
+      //NumOfTickets = NumOfTickets + quantity
+      //revenue = revenue + total
+      const statusDocRef = doc(firestore, "Transaction", "status");
+      try {
+        const statusDocSnap = await getDoc(statusDocRef);
+        if (statusDocSnap.exists()) {
+          const statusData = statusDocSnap.data();
+          const updatedNumOfTickets = (statusData.NumOfTickets || 0) + quantity;
+          const updatedRevenue = (statusData.revenue || 0) + total;
+
+          await updateDoc(statusDocRef, {
+            NumOfTickets: updatedNumOfTickets,
+            revenue: updatedRevenue
+          });
+        } else {
+          console.log("Status document not found. Creating a new one.");
+          await setDoc(statusDocRef, {
+            NumOfTickets: quantity,
+            revenue: total
+          });
+        }
+      } catch (error) {
+        console.error('Error updating transaction status:', error);
+      }
+
       alert('Purchase successful');
+
+
       onClose();
     } catch (error) {
       console.error('Error during purchase:', error);

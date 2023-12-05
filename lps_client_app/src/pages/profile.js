@@ -1,7 +1,7 @@
 // pages/Profile.js
 import React, { useEffect, useState } from 'react';
 import { auth, firestore } from '../firebaseConfig';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, addDoc, collection, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,13 @@ const Profile = () => {
   const [showAddBalance, setShowAddBalance] = useState(false);
   const [newCreditCard, setNewCreditCard] = useState('');
   const [addAmount, setAddAmount] = useState(0);
+  const [showTicketManagement, setShowTicketManagement] = useState(false);
+  const [modifyTicketMode, setModifyTicketMode] = useState(false);
+  const [newTicketData, setNewTicketData] = useState({ Name: '', jackpot: '', price: '' });
+  const [ticketToModify, setTicketToModify] = useState('');
+  const [lotteryStatus, setLotteryStatus] = useState(null);
+  const [showLotteryStatus, setShowLotteryStatus] = useState(false);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,8 +87,132 @@ const Profile = () => {
 
 
 
+  const manageTicket = async () => {
+    setShowTicketManagement(true);
+  };
+  
+  const handleNewTicket = async () => {
+    try {
+      // Ensure that the ticket name is provided
+      if (!newTicketData.Name) {
+        alert("Please provide a ticket name.");
+        return;
+      }
+  
+      const ticketRef = doc(firestore, "Available Tickets", newTicketData.Name);
+      await setDoc(ticketRef, {
+        ...newTicketData
+      });
+  
+      alert("New ticket added successfully.");
+      setNewTicketData({ name: '', jackpot: '', price: '' }); // Reset form
+      setShowTicketManagement(false); // Close popup
+    } catch (error) {
+      console.error("Error adding ticket:", error);
+    }
+  };
+  
+  
+  const handleModifyTicket = async () => {
+    // Logic to modify an existing ticket
+    const ticketRef = doc(firestore, "Available Tickets", ticketToModify);
+    try {
+      await updateDoc(ticketRef, newTicketData);
+      alert("Ticket modified successfully.");
+      setNewTicketData({ Name: '', jackpot: '', price: '' }); // Reset form
+      setTicketToModify(''); // Reset ticket name
+      setShowTicketManagement(false); // Close popup
+    } catch (error) {
+      console.error("Error modifying ticket:", error);
+    }
+  };
+
+  const getLotteryStatus = async () => {
+    const statusDocRef = doc(firestore, "Transaction", "status");
+    try {
+      const docSnap = await getDoc(statusDocRef);
+      if (docSnap.exists()) {
+        setLotteryStatus(docSnap.data());
+        setShowLotteryStatus(true);
+      } else {
+        console.log("No status document found!");
+        setLotteryStatus(null);
+      }
+    } catch (error) {
+      console.error("Error fetching lottery status:", error);
+    }
+  };
+
+
   if (!userData) {
     return <div>Loading profile...</div>;
+  }
+
+  if (userData?.Admin) {
+    return (
+      <div className="profile-container">
+        <h1>Admin Profile</h1>
+        <div className="profile-details">
+          <p><strong>Email:</strong> {userData.email}</p>
+        </div>
+        {/*button to view, add, remove, or edit*/}
+        <button onClick={() => manageTicket(true)}>Manage Ticket</button>
+        {/*button to view # of tickets sold and total lottery earnings*/}
+        <button onClick={() => getLotteryStatus(true)}>Get Lottery Status</button>
+        <button onClick={() => handleLogout()}>Log Out</button>
+
+        {showLotteryStatus && lotteryStatus && (
+      <div className="lottery-status">
+        <p><strong>Number of Tickets Sold:</strong> {lotteryStatus.NumOfTickets}</p>
+        <p><strong>Total Revenue:</strong> {lotteryStatus.revenue}</p>
+      </div>
+        )}
+        {showTicketManagement && (
+        <div>
+        <button onClick={() => setModifyTicketMode(false)}>Create New Ticket</button>
+        <button onClick={() => setModifyTicketMode(true)}>Modify Ticket</button>
+
+          {modifyTicketMode ? (
+            // UI to modify a ticket
+            <>
+              <input
+                type="text"
+                value={ticketToModify}
+                onChange={(e) => setTicketToModify(e.target.value)}
+                placeholder="Ticket Name to Modify"
+              />
+              <button onClick={handleModifyTicket}>Confirm Modify</button>
+            </>
+              ) : (
+            // UI to add a new ticket
+            <>
+              <input
+                type="text"
+                value={newTicketData.Name}
+                onChange={(e) => setNewTicketData({ ...newTicketData, Name: e.target.value })}
+                placeholder="Ticket Name"
+              />
+              <input
+                type="text"
+                value={newTicketData.jackpot}
+                onChange={(e) => setNewTicketData({ ...newTicketData, jackpot: e.target.value })}
+                placeholder="Jackpot"
+              />
+              <input
+                type="text"
+                value={newTicketData.price}
+                onChange={(e) => setNewTicketData({ ...newTicketData, price: e.target.value })}
+                placeholder="Price"
+              />
+              <button onClick={handleNewTicket}>Confirm New Ticket</button>
+            </>
+          )}
+        </div>
+      )}
+
+      </div>
+    );
+    
   }
 
 return (
