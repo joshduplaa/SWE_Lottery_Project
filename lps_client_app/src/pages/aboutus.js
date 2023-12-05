@@ -20,8 +20,11 @@ const AboutUs = () => {
       <p>
         <b>User-Friendly Interface:</b> We prioritize user experience, ensuring our app is intuitive, easy to navigate, and accessible to everyone.
         <br></br><b>Reliability and Accuracy:</b> We are dedicated to providing accurate and timely information, ensuring transparency and trustworthiness in every aspect.
-        <br></br><b>Community Engagement:</b> We value our users' feedback and continuously strive to enhance our app based on user suggestions and needs.
+        <br></br><b>Community Engagement:</b> Unlike traditional lottery systems, we operate on open-source principles. Our entire platform is built upon transparency and accessibility. The source code powering our lottery system is openly available for inspection, ensuring fairness and trustworthiness at every stage of the process.
       </p>
+        <p>
+        <a href="https://github.com/joshduplaa/SWE_Lottery_Project">Click here to visit the github repo</a>
+        </p>
         <p>
         Thank you for choosing Texas Lottery App!
         </p>
