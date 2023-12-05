@@ -227,6 +227,7 @@ return (
     </div>
     <button onClick={() => setShowCreditCardUpdate(true)}>Replace Credit Card</button>
     <button onClick={() => setShowAddBalance(true)}>Add Balance</button>
+    <button onClick={() => navigate('/order-history')}>Order History</button>
     <button>Withdraw</button> {/* Placeholder for now */}
     <button onClick={() => handleLogout()}>Log Out</button>
 

@@ -1,0 +1,13 @@
+/* Add this to your CSS file (e.g., OrderHistory.css) */
+
+.order-card {
+    /* Your existing styles for order card */
+    border-bottom: 1px solid #ccc; /* Adjust color as needed */
+    padding-bottom: 10px; /* Adjust as needed */
+    margin-bottom: 10px; /* Adjust as needed */
+  }
+  
+  .order-card:last-child {
+    border-bottom: none; /* Remove border for the last card */
+  }
+  

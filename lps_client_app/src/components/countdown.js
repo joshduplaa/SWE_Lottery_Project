@@ -10,7 +10,7 @@ const CountdownTimer = ({onCountdownFinished}) => {
 
       // Set nextTuesday to the next Tuesday at 2 AM
       nextTuesday.setDate(now.getDate() + (2 - now.getDay() + 7) % 7);
-      nextTuesday.setHours(1, 45, 0, 0); // 2 AM
+      nextTuesday.setHours(3, 55, 0, 0); // 2 AM
 
       // If now is already past this week's Tuesday 2 AM, set for next week
       if (now > nextTuesday) {
