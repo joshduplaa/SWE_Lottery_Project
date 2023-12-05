@@ -1,0 +1,18 @@
+/* PurchasePage.css */
+.purchase-page-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .quantity-selector,
+  .number-selector {
+    margin: 1rem 0;
+  }
+  
+  .number-selector input {
+    margin-right: 0.5rem;
+  }
+  

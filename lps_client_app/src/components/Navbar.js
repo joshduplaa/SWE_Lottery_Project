@@ -11,6 +11,8 @@ function Navbar() {
         <a href="/about-us">About Us</a>
         <a href="/winnings">Winnings</a>
         <a href="/profile">Profile</a>
+        <a href="/signup">SignUp</a>
+
       </div>
     </nav>
   );

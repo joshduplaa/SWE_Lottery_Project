@@ -1,56 +1,53 @@
 // pages/LoginPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../page_styles/login.css';
+import { auth } from '../firebaseConfig'; // Update this path
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
-
-const LoginPage = () => {
-  const [username, setUsername] = useState('');
+const LoginPage = ({ onLogin }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    // Perform login logic here
-    console.log("Logging in with:", username, password);
-    // After login, navigate to a different page, e.g., user profile
-    // navigate('/profile');
-  };
+    setError(''); // Reset error message
 
-  const handleSignUpRedirect = () => {
-    // Redirect user to the sign-up page
-    navigate('/signup');
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Optionally, you can retrieve additional user info from Firestore here if needed
+      onLogin();
+      alert(`Welcome ${userCredential.user.displayName || 'User'}`); // Display welcome message
+      navigate('/'); // Redirect to home page
+    } catch (error) {
+      console.error('Failed to log in:', error);
+      setError('No account found, try again or create an account');
+    }
   };
 
   return (
     <div className="login-container">
       <h1>Login</h1>
+      <h2>Please use registered email as username</h2>
       <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        <input 
+          type="email" 
+          placeholder="Email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          required 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          required 
+        />
         <button type="submit">Log In</button>
       </form>
-      <p className="signup-redirect">
-        Don't have an account? <button onClick={handleSignUpRedirect}>Sign Up</button>
-      </p>
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };
