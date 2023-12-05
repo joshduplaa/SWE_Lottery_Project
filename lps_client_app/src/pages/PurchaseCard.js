@@ -130,7 +130,7 @@ const PurchaseCard = ({ ticket, onClose, setPurchaseDetails }) => {
             <input
               type="number"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+              onChange={(e) => setQuantity(Math.max(1, Math.min(10, Number(e.target.value))))}
               min="1"
               max="10"
             />
