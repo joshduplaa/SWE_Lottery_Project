@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import WinningCards from './components/WinningCards';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import BrowseTickets from './pages/browsetickets';
 import AboutUs from './pages/aboutus';
 import WinningTickets from './pages/winningTickets';
@@ -10,7 +9,8 @@ import PurchaseCard from './pages/PurchaseCard';
 import LoginPage from './pages/login';
 import SignupPage from './pages/signUp';
 import CountdownTimer from './components/countdown';
-
+import Receipt from './components/receipt';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
@@ -19,13 +19,13 @@ import { firestore } from './firebaseConfig';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [winningNumbers, setWinningNumbers] = useState({});
+  const [purchaseDetails, setPurchaseDetails] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user); // Set authenticated state based on user presence
+      setIsAuthenticated(!!user);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
@@ -54,13 +54,13 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<WinningCards winningNumbers={winningNumbers} />} />
-            <Route path="/tickets" element={<BrowseTickets isAuthenticated={isAuthenticated} />} />
+            <Route path="/tickets" element={<BrowseTickets isAuthenticated={isAuthenticated} setPurchaseDetails={setPurchaseDetails} />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/winnings" element={<WinningTickets />} />
             <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
             <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/profile" />} />
-            <Route path="/purchase" element={<PurchaseCard />} />
             <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/profile" />} />
+            <Route path="/receipt" element={<Receipt purchaseDetails={purchaseDetails} />} />
           </Routes>
           <CountdownTimer onCountdownFinished={handleCountdownFinished} />
         </main>
@@ -70,3 +70,4 @@ function App() {
 }
 
 export default App;
+

@@ -1,14 +1,13 @@
-
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { firestore, auth } from '../firebaseConfig';
-import { collection, addDoc, getDoc, doc, query, where, getDocs, updateDoc, setDoc } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, updateDoc, setDoc, getDocs, query, collection, where } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
-const PurchaseCard = ({ ticket, onClose }) => {
+const PurchaseCard = ({ ticket, onClose, setPurchaseDetails }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedNumbers, setSelectedNumbers] = useState(Array(5).fill(1));
   const [isConfirmingPurchase, setIsConfirmingPurchase] = useState(false);
+  const Navigate = useNavigate();
   
 
   const handleNumberChange = (index, value) => {
@@ -41,85 +40,79 @@ const PurchaseCard = ({ ticket, onClose }) => {
     const transactionId = await generateTransactionId();
     const total = quantity * ticket.price;
     const sortedNumbers = [...selectedNumbers].sort((a, b) => a - b);
-  
+
     const user = auth.currentUser;
     if (!user) {
-      alert('User not found. Please login again.');
-      return;
+        alert('User not found. Please login again.');
+        return;
     }
-  
-    // Fetching and updating user balance
-    try {
-      const userDocRef = doc(firestore, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-  
-      if (!userDocSnap.exists()) {
-        alert("User data not found.");
-        return;
-      }
-  
-      const userData = userDocSnap.data();
-      const updatedBalance = (userData.balance || 0) - total;
-  
-      if (updatedBalance < 0) {
-        alert("Insufficient balance to complete the purchase.");
-        return;
-      }
-  
-      // Update balance in user's document
-      await updateDoc(userDocRef, { balance: updatedBalance });
-  
-      // Proceed with adding the purchase record
-      const purchaseDocRef = doc(firestore, "Purchased Tickets", transactionId);
-      await setDoc(purchaseDocRef, {
-        ticketName: ticket.Name,
-        price: ticket.price,
-        quantity: quantity,
-        total: total,
-        selectedNumbers: sortedNumbers,
-        purchaseDate: new Date().toISOString(),
-        userName: user.displayName, // User's display name
-        userEmail: user.email, // User's email
-        transactionId: transactionId
-      });
-  
 
-      //Add logic to increase the NumOfTickets and revenue in the Transaction collection under the status document accordingly
-      //NumOfTickets = NumOfTickets + quantity
-      //revenue = revenue + total
-      const statusDocRef = doc(firestore, "Transaction", "status");
-      try {
+    try {
+        const userDocRef = doc(firestore, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+            alert("User data not found.");
+            return;
+        }
+
+        const userData = userDocSnap.data();
+        const updatedBalance = (userData.balance || 0) - total;
+
+        if (updatedBalance < 0) {
+            alert("Insufficient balance to complete the purchase.");
+            return;
+        }
+
+        await updateDoc(userDocRef, { balance: updatedBalance });
+
+        const purchaseData = {
+            ticketName: ticket.Name,
+            price: ticket.price,
+            quantity: quantity,
+            total: total,
+            selectedNumbers: sortedNumbers,
+            purchaseDate: new Date().toISOString(),
+            userName: user.displayName,
+            userEmail: user.email,
+            transactionId: transactionId
+        };
+        
+
+        await setDoc(doc(firestore, "Purchased Tickets", transactionId), purchaseData);
+
+
+
+        // Update transaction status in the "Transaction" collection
+        const statusDocRef = doc(firestore, "Transaction", "status");
         const statusDocSnap = await getDoc(statusDocRef);
         if (statusDocSnap.exists()) {
-          const statusData = statusDocSnap.data();
-          const updatedNumOfTickets = (statusData.NumOfTickets || 0) + quantity;
-          const updatedRevenue = (statusData.revenue || 0) + total;
+            const statusData = statusDocSnap.data();
+            const updatedNumOfTickets = (statusData.NumOfTickets || 0) + quantity;
+            const updatedRevenue = (statusData.revenue || 0) + total;
 
-          await updateDoc(statusDocRef, {
-            NumOfTickets: updatedNumOfTickets,
-            revenue: updatedRevenue
-          });
+            await updateDoc(statusDocRef, {
+                NumOfTickets: updatedNumOfTickets,
+                revenue: updatedRevenue
+            });
         } else {
-          console.log("Status document not found. Creating a new one.");
-          await setDoc(statusDocRef, {
-            NumOfTickets: quantity,
-            revenue: total
-          });
+            console.log("Status document not found. Creating a new one.");
+            await setDoc(statusDocRef, {
+                NumOfTickets: quantity,
+                revenue: total
+            });
         }
-      } catch (error) {
-        console.error('Error updating transaction status:', error);
-      }
 
-      alert('Purchase successful');
+        setPurchaseDetails(purchaseData); // Update purchaseDetails in App.j
 
-
-      onClose();
+        alert('Purchase successful');
+        Navigate('/receipt'); // Redirect to the receipt page
     } catch (error) {
-      console.error('Error during purchase:', error);
-      alert('Purchase Failed');
+        console.error('Error during purchase:', error);
+        alert('Purchase Failed');
     }
-  };
-  
+};
+
   return (
     <div className="purchase-card">
       {isConfirmingPurchase ? (

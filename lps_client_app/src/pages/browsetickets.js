@@ -1,42 +1,29 @@
-// pages/BrowseTickets.js
 import React, { useState, useEffect } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth'; // assuming you're using react-firebase-hooks
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, firestore } from '../firebaseConfig';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import PurchaseCard from './PurchaseCard';
 import '../page_styles/browsetickets.css';
 
-
-const BrowseTickets = ({ isAuthenticated }) => {
-  const [user, loading, error] = useAuthState(auth);
+const BrowseTickets = ({ isAuthenticated, setPurchaseDetails }) => {
+  const [user] = useAuthState(auth);
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showPurchaseCard, setShowPurchaseCard] = useState(false);
-  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     const fetchTickets = async () => {
-      const querySnapshot = await getDocs(collection(firestore, "Available Tickets"));
-      const ticketsArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTickets(ticketsArray);
-    };
-
-    fetchTickets();
-    const fetchUserData = async () => {
-      if (user) {
-        const userDocRef = doc(firestore, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        }
+      try {
+        const querySnapshot = await getDocs(collection(firestore, "Available Tickets"));
+        const ticketsArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTickets(ticketsArray);
+      } catch (error) {
+        console.error("Error fetching tickets:", error);
       }
     };
 
-    if (!loading && !error) {
-      fetchUserData();
-    }
-  }, [user, loading, error]);
-
+    fetchTickets();
+  }, []);
 
   const handleBuyNow = (ticket) => {
     if (!isAuthenticated) {
@@ -57,10 +44,12 @@ const BrowseTickets = ({ isAuthenticated }) => {
           <button onClick={() => handleBuyNow(ticket)}>Buy Now</button>
         </div>
       ))}
-      {showPurchaseCard && selectedTicket && (
+
+      {selectedTicket && (
         <PurchaseCard
           ticket={selectedTicket}
-          onClose={() => setShowPurchaseCard(false)}
+          onClose={() => setSelectedTicket(null)}
+          setPurchaseDetails={setPurchaseDetails}
         />
       )}
     </div>
