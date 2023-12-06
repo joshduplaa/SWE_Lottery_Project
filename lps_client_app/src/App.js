@@ -13,7 +13,7 @@ import Receipt from './components/receipt';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
 import { firestore } from './firebaseConfig';
 import OrderHistory from './pages/orderHistory';
 import Search from './pages/Search';
@@ -36,29 +36,50 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  //Sends Winning numbers to database
+  //Sends Winning numbers to database and determines if anyone has won
   const handleCountdownFinished = async () => {
     const ticketsSnapshot = await getDocs(collection(firestore, "Available Tickets"));
     const winningNumbersDict = {};
 
-    ticketsSnapshot.forEach(async (doc) => {
+    for (let doc of ticketsSnapshot.docs) {
         const ticketName = doc.data().Name;
-        const randomNumbers = Array.from({ length: 5 }, () => Math.floor(Math.random() * 50) + 1);
+        const randomNumbers = Array.from({ length: 5 }, () => Math.floor(Math.random() * 50) + 1).sort((a, b) => a - b);
         winningNumbersDict[ticketName] = randomNumbers;
 
         // Store in Firestore
         try {
             await addDoc(collection(firestore, "Winning Numbers"), {
                 ticketName: ticketName,
-                WinningNumbers: randomNumbers
+                WinningNumbers: randomNumbers,
+                date: new Date().toISOString()
+            });
+
+            // Check for winning tickets
+            const purchasedTicketsSnapshot = await getDocs(query(collection(firestore, "Purchased Tickets"), where("ticketName", "==", ticketName)));
+            purchasedTicketsSnapshot.forEach(ticketDoc => {
+                const purchasedTicket = ticketDoc.data();
+                if (arraysMatch(purchasedTicket.selectedNumbers.sort((a, b) => a - b), randomNumbers)) {
+                    // Handle winning ticket
+                    console.log("Winning ticket found:", ticketDoc.id, purchasedTicket);
+                    // You can update the document or perform other actions as needed
+                }
             });
         } catch (error) {
-            console.error("Error saving winning numbers to Firestore:", error);
+            console.error("Error saving winning numbers or checking tickets:", error);
         }
-    });
+    }
 
     setWinningNumbers(winningNumbersDict);
 };
+
+// Helper function to compare two arrays
+function arraysMatch(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+}
 
 return (
   <div className="App">
