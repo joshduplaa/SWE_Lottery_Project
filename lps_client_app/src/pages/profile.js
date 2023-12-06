@@ -56,8 +56,8 @@ const Profile = () => {
   };
 
   const handleAddBalance = async () => {
-    if (!userData.creditCard || userData.creditCard.length !== 12) {
-      alert("Credit Card Number invalid, not 12 numbers, please update your credit card number");
+    if (!userData.creditCard || userData.creditCard.length !== 16) {
+      alert("Credit Card Number invalid, not 16 numbers, please update your credit card number");
       return;
     }
 

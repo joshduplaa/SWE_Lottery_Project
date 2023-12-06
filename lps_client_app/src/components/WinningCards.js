@@ -1,9 +1,28 @@
-import React from 'react';
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../page_styles/browsetickets.css';
+
+
 
 function WinningCards({ winningNumbers }) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate(`/search?query=${searchQuery}`);
+  };
+
   return (
     <section className="winning-cards">
-      <h2>Last Week's Winning Numbers:</h2>
+      <input 
+        type="text" 
+        value={searchQuery} 
+        onChange={(e) => setSearchQuery(e.target.value)} 
+        placeholder="Search tickets"
+      />
+      <button onClick={handleSearch}>Search Tickets</button>
+      <h2>This Week's Winning Numbers:</h2>
       {winningNumbers && (
         <table>
           <thead>

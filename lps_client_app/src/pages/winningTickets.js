@@ -1,37 +1,38 @@
-// pages/PreviouslyWonTickets.js
-import '../page_styles/winningTickets.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { firestore } from '../firebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
+import '../page_styles/browsetickets.css';
 
 
-const PreviouslyWonTickets = () => {
-  // Example data for previously won tickets
-  const wonTickets = [
-    { id: 1, name: "Lotto Max", date: "2023-01-01", amount: "$500,000" },
-    { id: 2, name: "Powerball", date: "2023-01-15", amount: "$1,000,000" },
-    // ... Add more dummy ticket objects
-  ];
+const WinningTickets = () => {
+  const [winningTickets, setWinningTickets] = useState([]);
 
-  // Ensure you have 10 tickets for the purpose of this example
-  while (wonTickets.length < 10) {
-    wonTickets.push({
-      id: wonTickets.length + 1,
-      name: "Ticket " + (wonTickets.length + 1),
-      date: "2023-02-" + (wonTickets.length < 9 ? '0' : '') + (wonTickets.length + 1),
-      amount: "$" + (100000 * (wonTickets.length + 1)).toLocaleString()
-    });
-  }
+  useEffect(() => {
+    const fetchWinningTickets = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, "Winners"));
+        const tickets = querySnapshot.docs.map(doc => doc.data());
+        setWinningTickets(tickets);
+      } catch (error) {
+        console.error("Error fetching winning tickets:", error);
+      }
+    };
+
+    fetchWinningTickets();
+  }, []);
 
   return (
-    <div className="previously-won-tickets-container">
-      {wonTickets.map((ticket) => (
-        <div key={ticket.id} className="won-ticket-card">
-          <h3>{ticket.name}</h3>
-          <p>Date Won: {ticket.date}</p>
-          <p>Amount: {ticket.amount}</p>
+    <div className="tickets-container">
+      {winningTickets.map((ticket, index) => (
+        <div key={index} className="ticket-card">
+          <h3>{ticket.ticketName}</h3>
+          <p>Email: {ticket.email}</p>
+          <p>Jackpot: {ticket.jackpot}</p>
+          <p>Date: {new Date(ticket.date).toLocaleString()}</p>
         </div>
       ))}
     </div>
   );
 };
 
-export default PreviouslyWonTickets;
+export default WinningTickets;

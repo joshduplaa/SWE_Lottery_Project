@@ -16,6 +16,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs, addDoc, query, where, updateDoc } from 'firebase/firestore';
 import { firestore } from './firebaseConfig';
 import OrderHistory from './pages/orderHistory';
+import Search from './pages/Search';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -125,6 +126,7 @@ function App() {
         <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         <main>
           <Routes>
+            <Route path="/search" element={<Search />} />
             <Route path="/" element={<WinningCards winningNumbers={winningNumbers} />} />
             <Route path="/tickets" element={<BrowseTickets isAuthenticated={isAuthenticated} setPurchaseDetails={setPurchaseDetails} />} />
             <Route path="/about-us" element={<AboutUs />} />
